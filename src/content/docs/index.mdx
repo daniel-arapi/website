@@ -1,0 +1,38 @@
+---
+title: Daniel Arapi
+description: Technical notes, documentation, and projects by Daniel Arapi.
+template: splash
+hero:
+  title: Daniel Arapi
+  tagline: Networking, automation, infrastructure, and software engineering.
+  actions:
+    - text: Browse Notes
+      link: /networking/
+      icon: right-arrow
+    - text: GitHub
+      link: https://github.com/daniel-arapi/
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Technical Notes
+
+<CardGrid>
+  <Card title="Networking" icon="seti:network">
+    Routing, switching, network design, protocols, and troubleshooting.
+  </Card>
+
+  <Card title="Network Automation" icon="setting">
+    Ansible, Python, APIs, source of truth, testing, and automation architecture.
+  </Card>
+
+  <Card title="Linux & Infrastructure" icon="server">
+    Linux, containers, virtualization, homelab, and infrastructure.
+  </Card>
+
+  <Card title="Development" icon="code">
+    Python, Git, development environments, tooling, and software engineering.
+  </Card>
+</CardGrid>
