@@ -16,15 +16,19 @@ hero:
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
+import IconCard from '../../components/IconCard.astro';
+
+export const routerIcon = `<rect x="3" y="14" width="18" height="6" rx="1.5"/><rect x="6.2" y="7" width="1.6" height="7" rx="0.8"/><rect x="11.2" y="4" width="1.6" height="10" rx="0.8"/><rect x="16.2" y="7" width="1.6" height="7" rx="0.8"/><circle cx="7" cy="6.2" r="1.3"/><circle cx="12" cy="3.2" r="1.3"/><circle cx="17" cy="6.2" r="1.3"/>`;
+export const codeIcon = `<path d="M8.5 6 3 12l5.5 6 1.5-1.4L6 12l4-4.6Z"/><path d="M15.5 6 21 12l-5.5 6L14 16.6 18 12l-4-4.6Z"/>`;
 
 ## Technical Notes
 
 <CardGrid>
-  <Card title="Networking" icon="seti:network">
+  <IconCard title="Networking" icon={routerIcon}>
     Routing, switching, network design, protocols, and troubleshooting.
 
     [View section →](/website/networking/)
-  </Card>
+  </IconCard>
 
   <Card title="Network Automation" icon="setting">
     Ansible, Python, APIs, source of truth, testing, and automation architecture.
@@ -38,9 +42,9 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
     [View section →](/website/infrastructure/)
   </Card>
 
-  <Card title="Development" icon="code">
+  <IconCard title="Development" icon={codeIcon}>
     Python, Git, development environments, tooling, and software engineering.
 
     [View section →](/website/development/)
-  </Card>
+  </IconCard>
 </CardGrid>
