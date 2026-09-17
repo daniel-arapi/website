@@ -1,0 +1,204 @@
+---
+title: Vim/Vi Reference Guide
+description: A practical Vim/Vi command reference plus a starter .vimrc with color coding, line numbers, and other must-have features.
+---
+
+import { Steps, Tabs, TabItem, Aside } from '@astrojs/starlight/components';
+
+Vim (and its predecessor Vi) is a modal text editor available on almost every Unix-like system by default, which makes it worth knowing at least the basics even if it isn't your daily editor. This page is a command reference plus a minimal, sensible starting config.
+
+## Vi vs. Vim
+
+- **Vi** — The original, extremely minimal editor. Present on essentially every Unix/Linux system, even minimal containers. No syntax highlighting, no plugins, bare-bones by design.
+- **Vim** ("Vi IMproved") — A superset of Vi with syntax highlighting, undo trees, visual mode, splits, plugins, and scripting. On most modern Linux distros, running `vi` actually runs Vim in "vi-compatible-ish" mode.
+- **Neovim** — A modern fork of Vim (better defaults, Lua config/plugins, built-in LSP support). Command reference below applies to Neovim too — the modal editing model is identical.
+
+If only one is available, it's Vim; this guide's config section is written for Vim/Neovim (`~/.vimrc` or `~/.config/nvim/init.vim`).
+
+## The modal model, in one paragraph
+
+Vim has distinct modes: **Normal** (default — keys are commands, not text input), **Insert** (typing inserts text, like a normal editor), **Visual** (select text to operate on), and **Command-line** (`:` commands like save/quit/search-replace). Press <kbd>Esc</kbd> to return to Normal mode from anywhere — this is the single most-used key in Vim.
+
+## Essential commands
+
+### Opening, saving, quitting
+
+| Command | Action |
+|---|---|
+| `vim file.txt` | Open (or create) a file |
+| `:w` | Save |
+| `:w newname.txt` | Save as |
+| `:q` | Quit (fails if unsaved changes) |
+| `:q!` | Quit and discard changes |
+| `:wq` or `:x` | Save and quit |
+| `ZZ` | Save and quit (Normal mode shortcut, no `:`) |
+
+### Movement (Normal mode)
+
+| Command | Action |
+|---|---|
+| `h` `j` `k` `l` | Left, down, up, right |
+| `w` / `b` | Jump forward / backward one word |
+| `0` / `$` | Start / end of line |
+| `gg` / `G` | Start / end of file |
+| `:42` or `42G` | Go to line 42 |
+| `Ctrl+d` / `Ctrl+u` | Half-page down / up |
+| `%` | Jump to matching bracket/paren |
+
+### Editing
+
+| Command | Action |
+|---|---|
+| `i` / `a` | Insert before / after cursor |
+| `I` / `A` | Insert at start / end of line |
+| `o` / `O` | Open new line below / above, enter Insert mode |
+| `x` | Delete character under cursor |
+| `dd` | Delete (cut) current line |
+| `yy` | Yank (copy) current line |
+| `p` / `P` | Paste after / before cursor |
+| `u` / `Ctrl+r` | Undo / redo |
+| `.` | Repeat the last change — one of Vim's most powerful habits |
+
+### Visual mode & search
+
+| Command | Action |
+|---|---|
+| `v` | Start character-wise visual selection |
+| `V` | Start line-wise visual selection |
+| `Ctrl+v` | Start block (column) visual selection |
+| `/pattern` then `Enter` | Search forward; `n` / `N` for next / previous match |
+| `:%s/old/new/g` | Replace all `old` with `new` in the file |
+| `:%s/old/new/gc` | Same, but confirm each replacement |
+
+<Aside type="tip">
+  `.` (repeat last change) combined with search (`/`) or a count (e.g. `3dd` deletes 3 lines) is where Vim's speed actually comes from — memorize `.` before anything fancier.
+</Aside>
+
+## Setting up Vim with must-have features
+
+<Steps>
+
+1. **Locate (or create) your config file.**
+
+   <Tabs>
+     <TabItem label="Vim">
+       ```bash
+       ~/.vimrc
+       ```
+     </TabItem>
+     <TabItem label="Neovim">
+       ```bash
+       ~/.config/nvim/init.vim
+       ```
+     </TabItem>
+   </Tabs>
+
+2. **Add the must-have baseline settings.**
+
+   ```vim
+   " Enable syntax highlighting (color coding for code)
+   syntax on
+
+   " Show absolute line numbers
+   set number
+
+   " Show the line number relative to the cursor on every other line
+   " (great for jumping with counts, e.g. "5j")
+   set relativenumber
+
+   " Highlight the current line
+   set cursorline
+
+   " Enable a color scheme (built into Vim, no install needed)
+   colorscheme desert
+
+   " Use spaces instead of tabs, 2-space indent (adjust to taste)
+   set expandtab
+   set tabstop=2
+   set shiftwidth=2
+   set softtabstop=2
+
+   " Auto-indent new lines to match the previous line
+   set autoindent
+
+   " Highlight search matches as you type, and while active
+   set incsearch
+   set hlsearch
+
+   " Case-insensitive search, unless the pattern has an uppercase letter
+   set ignorecase
+   set smartcase
+
+   " Show a ruler with line/column position in the status bar
+   set ruler
+
+   " Always show a status line
+   set laststatus=2
+
+   " Allow switching buffers without saving first
+   set hidden
+
+   " Show matching bracket/paren when typing the closing one
+   set showmatch
+
+   " Keep some context lines visible above/below the cursor while scrolling
+   set scrolloff=8
+
+   " Enable mouse support (click to move cursor, scroll, resize splits)
+   set mouse=a
+
+   " Persistent undo across sessions
+   set undofile
+   set undodir=~/.vim/undodir
+   ```
+
+3. **Create the undo directory (only needed once).**
+
+   ```bash
+   mkdir -p ~/.vim/undodir
+   ```
+
+4. **Reload the config to apply it without restarting Vim.**
+
+   ```vim
+   :source ~/.vimrc
+   ```
+
+</Steps>
+
+<Aside type="note">
+  `colorscheme desert` is a built-in theme included with every Vim install, so it works with zero setup. For a nicer, modern theme (Catppuccin, Gruvbox, Tokyo Night — the same ones covered in the [terminal environment guide](/website/development/terminal-environment/)), install a plugin manager (below) and pull in the matching Vim theme.
+</Aside>
+
+## Adding a plugin manager (optional, but common)
+
+Vim's built-in features cover the essentials above; a plugin manager is what most people reach for next, mainly for fuzzy file finding, a file tree sidebar, Git integration, and LSP-based autocomplete.
+
+[vim-plug](https://github.com/junegunn/vim-plug) is the most common lightweight choice:
+
+```bash
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+```
+
+```vim
+" Add near the top of ~/.vimrc
+call plug#begin()
+
+Plug 'preservim/nerdtree'        " File tree sidebar
+Plug 'junegunn/fzf.vim'          " Fuzzy file/text finder (pairs with fzf — see terminal guide)
+Plug 'tpope/vim-fugitive'        " Git integration
+Plug 'itchyny/lightline.vim'     " A cleaner status line
+Plug 'morhetz/gruvbox'           " A popular color theme
+
+call plug#end()
+```
+
+Then, inside Vim, run `:PlugInstall` to install everything listed.
+
+## Common pitfalls
+
+- **Stuck in Insert mode / can't type commands** — Press <kbd>Esc</kbd> first. This is the #1 point of confusion for anyone new to modal editing.
+- **`:wq` fails with "no write since last change"** — You have unsaved changes in a different buffer, or the file is read-only; use `:w!` if you have permission, or check `:ls` for other open buffers.
+- **Colors look wrong in the terminal** — Make sure your terminal emulator and `$TERM` support 256 colors or truecolor; add `set termguicolors` to `~/.vimrc` for full truecolor themes, and ensure your terminal (e.g. Ghostty, from the [terminal environment guide](/website/development/terminal-environment/)) has truecolor enabled.
+- **Accidentally opened Vim and don't know how to leave** — `Esc` then `:q!` then `Enter`.
