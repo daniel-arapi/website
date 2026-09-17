@@ -15,32 +15,32 @@ hero:
       variant: minimal
 ---
 
-import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Card, CardGrid } from '@astrojs/starlight/components';
 
 ## Technical Notes
 
 <CardGrid>
-  <LinkCard
-    title="Networking"
-    description="Routing, switching, network design, protocols, and troubleshooting."
-    href="/website/networking/"
-  />
+  <Card title="Networking" icon="seti:network">
+    Routing, switching, network design, protocols, and troubleshooting.
 
-  <LinkCard
-    title="Network Automation"
-    description="Ansible, Python, APIs, source of truth, testing, and automation architecture."
-    href="/website/network-automation/"
-  />
+    [View section →](/website/networking/)
+  </Card>
 
-  <LinkCard
-    title="Linux & Infrastructure"
-    description="Linux, containers, virtualization, homelab, and infrastructure."
-    href="/website/infrastructure/"
-  />
+  <Card title="Network Automation" icon="setting">
+    Ansible, Python, APIs, source of truth, testing, and automation architecture.
 
-  <LinkCard
-    title="Development"
-    description="Python, Git, development environments, tooling, and software engineering."
-    href="/website/development/"
-  />
+    [View section →](/website/network-automation/)
+  </Card>
+
+  <Card title="Linux & Infrastructure" icon="server">
+    Linux, containers, virtualization, homelab, and infrastructure.
+
+    [View section →](/website/infrastructure/)
+  </Card>
+
+  <Card title="Development" icon="code">
+    Python, Git, development environments, tooling, and software engineering.
+
+    [View section →](/website/development/)
+  </Card>
 </CardGrid>
