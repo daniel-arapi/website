@@ -1,0 +1,216 @@
+---
+title: Recommended Terminal Environment
+description: A modern terminal setup — Ghostty, a color theme, eza, zoxide, fuzzy search, and other popular CLI tools — with install and config steps.
+---
+
+import { Steps, Tabs, TabItem, Aside } from '@astrojs/starlight/components';
+
+A fast terminal emulator plus a handful of modern CLI replacements (`ls`, `cd`, `grep`, `history`) removes most of the daily friction of working in a shell. This guide sets up that stack step by step, then covers a few other popular tools worth knowing about.
+
+## The stack
+
+| Tool | Replaces | What it adds |
+|---|---|---|
+| [Ghostty](https://ghostty.org/) | Terminal.app / iTerm2 | GPU-accelerated, fast startup, native, minimal config |
+| A color theme | default 16-color palette | consistent, readable colors across the terminal and prompt |
+| [eza](https://github.com/eza-community/eza) | `ls` | icons, git status, tree view, colorized by file type |
+| [zoxide](https://github.com/ajeetdsouza/zoxide) | `cd` | jump to frecently-used directories by partial name |
+| [fzf](https://github.com/junegunn/fzf) | shell history search, file pickers | fuzzy-find anything interactively |
+| [starship](https://starship.rs/) | default shell prompt | fast, informative, git-aware prompt for any shell |
+| [ripgrep](https://github.com/BurntSushi/ripgrep) (`rg`) | `grep` | much faster recursive search, respects `.gitignore` |
+| [bat](https://github.com/sharkdp/bat) | `cat` | syntax highlighting, line numbers, git diff markers |
+| [fd](https://github.com/sharkdp/fd) | `find` | simpler syntax, faster, respects `.gitignore` |
+| [atuin](https://atuin.sh/) | shell history | searchable, syncable history with context (cwd, exit code, duration) |
+
+## Setting up the stack
+
+<Steps>
+
+1. **Install Ghostty.**
+
+   <Tabs>
+     <TabItem label="macOS">
+       ```bash
+       brew install --cask ghostty
+       ```
+     </TabItem>
+     <TabItem label="Linux">
+       ```bash
+       # Arch
+       pacman -S ghostty
+
+       # Or build from source / check ghostty.org for your distro's package
+       ```
+     </TabItem>
+   </Tabs>
+
+   Ghostty reads config from `~/.config/ghostty/config` on both platforms.
+
+2. **Pick a color theme.**
+
+   Ghostty ships with many built-in themes. List them, then set one:
+
+   ```bash
+   # List available themes
+   ghostty +list-themes
+   ```
+
+   ```ini
+   # ~/.config/ghostty/config
+   theme = catppuccin-mocha
+   font-family = "JetBrains Mono"
+   font-size = 13
+   ```
+
+   [Catppuccin](https://catppuccin.com/), [Tokyo Night](https://github.com/enkia/tokyo-night-vscode-theme), and [Rosé Pine](https://rosepinetheme.com/) are the most popular choices right now — all have Ghostty built-ins and matching themes for tmux, Neovim, and starship, so the whole terminal stack stays visually consistent.
+
+3. **Install eza, zoxide, and fzf.**
+
+   ```bash
+   brew install eza zoxide fzf
+   ```
+
+   Then wire them into your shell profile (`~/.zshrc` or `~/.bashrc`):
+
+   ```bash
+   # eza aliases
+   alias ls="eza --icons"
+   alias ll="eza -l --icons --git"
+   alias lt="eza --tree --icons"
+
+   # zoxide (replaces cd with a frecency-based jumper)
+   eval "$(zoxide init zsh)"   # or: bash, fish, etc.
+   alias cd="z"
+
+   # fzf keybindings and fuzzy completion (Ctrl+R history, Ctrl+T files, Alt+C cd)
+   source <(fzf --zsh)         # or: fzf --bash
+   ```
+
+   Restart your shell or `source ~/.zshrc` to pick up the changes.
+
+4. **Install starship for the prompt.**
+
+   ```bash
+   brew install starship
+   ```
+
+   ```bash
+   # Add to the end of ~/.zshrc (or ~/.bashrc)
+   eval "$(starship init zsh)"
+   ```
+
+   Starship auto-detects context (git branch/status, language versions, exit codes) and renders it in the prompt with no further config needed. Customize via `~/.config/starship.toml` if you want to change what's shown.
+
+</Steps>
+
+<Aside type="tip">
+  `zoxide` needs to be *used* to learn your habits — it ranks directories by "frecency" (frequency + recency), so `z proj` won't jump anywhere useful until you've `cd`'d into a few project directories with it first.
+</Aside>
+
+## Using zoxide and fzf day to day
+
+```bash
+# zoxide: jump to the best match for "proj" in your history
+z proj
+
+# zoxide: interactively pick among matches
+zi proj
+
+# fzf: fuzzy-search shell history (bound to Ctrl+R after setup)
+# just press Ctrl+R and start typing
+
+# fzf: fuzzy-find a file and open it (bound to Ctrl+T)
+vim $(fzf)
+
+# fzf: pipe any list into it to fuzzy-filter interactively
+git branch | fzf
+```
+
+## Other popular tools worth adding
+
+<Tabs>
+  <TabItem label="Search & files">
+    ```bash
+    brew install ripgrep bat fd
+
+    # Fast recursive search, respects .gitignore
+    rg "TODO"
+
+    # cat with syntax highlighting and git markers
+    bat src/index.ts
+
+    # find, but simpler and faster
+    fd config
+    ```
+  </TabItem>
+  <TabItem label="History & sessions">
+    ```bash
+    # atuin: searchable, contextual shell history (replaces Ctrl+R)
+    brew install atuin
+    atuin init zsh | source
+
+    # tmux or zellij: terminal multiplexer for persistent sessions
+    brew install tmux
+    # or, a more modern alternative with sane defaults:
+    brew install zellij
+    ```
+  </TabItem>
+  <TabItem label="Git & diffs">
+    ```bash
+    # delta: syntax-highlighted, side-by-side git diffs
+    brew install git-delta
+    ```
+
+    ```ini
+    # ~/.gitconfig
+    [core]
+      pager = delta
+    [interactive]
+      diffFilter = delta --color-only
+    [delta]
+      navigate = true
+      side-by-side = true
+    ```
+  </TabItem>
+  <TabItem label="Directory env">
+    ```bash
+    # direnv: auto-load/unload environment variables per directory
+    brew install direnv
+    ```
+
+    ```bash
+    # Add to the end of ~/.zshrc
+    eval "$(direnv hook zsh)"
+    ```
+  </TabItem>
+</Tabs>
+
+## Verification
+
+```bash
+# Confirm each tool is installed and on PATH
+ghostty --version
+eza --version
+zoxide --version
+fzf --version
+starship --version
+
+# Confirm shell integrations actually loaded (should print a function, not "not found")
+type z
+type __fzf_history__ 2>/dev/null || type fzf 
+
+# Confirm starship is the active prompt (look for PS1 referencing starship, or just check the prompt itself renders git/version info)
+echo $STARSHIP_SHELL
+```
+
+If a tool's alias or keybinding doesn't work after installing, the most common cause is forgetting to add its `init`/`hook` line to your shell profile, or not restarting the shell after editing it.
+
+## Summary
+
+- **Ghostty** — the terminal emulator itself; fast, native, minimal.
+- **A color theme** (Catppuccin, Tokyo Night, Rosé Pine) — applied consistently across Ghostty, tmux/zellij, and your editor.
+- **eza** — a colorful, git-aware `ls` replacement.
+- **zoxide** — jump directories by frecency instead of typing full paths.
+- **fzf** — fuzzy-search history, files, branches, or any piped list.
+- **starship** — a fast, informative, git-aware prompt.
+- Round it out with **ripgrep**, **bat**, **fd** for search/inspection, **atuin** for richer history, **tmux/zellij** for persistent sessions, **delta** for readable git diffs, and **direnv** for per-project environment variables.
