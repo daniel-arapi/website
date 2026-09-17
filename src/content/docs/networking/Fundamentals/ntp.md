@@ -36,47 +36,39 @@ NTP runs over UDP port 123. A client periodically exchanges timestamped packets 
 
 ### Basic client configuration
 
-```text
-! Configure NTP servers (prefer marks the primary source)
-ntp server 192.0.2.1 prefer
-ntp server 192.0.2.2
+<pre style="background:var(--sl-color-gray-6);color:var(--sl-color-white);border:1px solid var(--sl-color-hairline);padding:0.75rem 1rem;border-radius:0.375rem;overflow-x:auto;line-height:1.7;font-size:0.85em;"><code><span style="color:var(--sl-color-green);">! Configure NTP servers (prefer marks the primary source)</span>
+<strong>ntp server</strong> <em>192.0.2.1</em> <strong>prefer</strong>
+<strong>ntp server</strong> <em>192.0.2.2</em>
 
-! Source NTP requests from a loopback for consistent sourcing
-ntp source Loopback0
+<span style="color:var(--sl-color-green);">! Source NTP requests from a loopback for consistent sourcing</span>
+<strong>ntp source</strong> <em>Loopback0</em>
 
-! Set the device's timezone and daylight saving rules
-clock timezone EST -5
-clock summer-time EDT recurring
+<span style="color:var(--sl-color-green);">! Set the device's timezone and daylight saving rules</span>
+<strong>clock timezone</strong> <em>EST -5</em>
+<strong>clock summer-time</strong> <em>EDT</em> <strong>recurring</strong>
 
-! Optional: log NTP sync events
-service timestamps log datetime msec localtime show-timezone
-```
+<span style="color:var(--sl-color-green);">! Optional: log NTP sync events</span>
+<strong>service timestamps log datetime msec localtime show-timezone</strong></code></pre>
 
 ### NTP authentication (recommended)
 
-```text
-ntp authenticate
-ntp authentication-key 1 md5 MyStrongKey123
-ntp trusted-key 1
-ntp server 192.0.2.1 key 1 prefer
-```
+<pre style="background:var(--sl-color-gray-6);color:var(--sl-color-white);border:1px solid var(--sl-color-hairline);padding:0.75rem 1rem;border-radius:0.375rem;overflow-x:auto;line-height:1.7;font-size:0.85em;"><code><strong>ntp authenticate</strong>
+<strong>ntp authentication-key</strong> <em>1</em> <strong>md5</strong> <em>MyStrongKey123</em>
+<strong>ntp trusted-key</strong> <em>1</em>
+<strong>ntp server</strong> <em>192.0.2.1</em> <strong>key</strong> <em>1</em> <strong>prefer</strong></code></pre>
 
 ### Acting as an NTP server for downstream devices
 
-```text
-ntp master 3
-! or, more commonly, just let the device relay its synced time:
-ntp server 192.0.2.1
-```
+<pre style="background:var(--sl-color-gray-6);color:var(--sl-color-white);border:1px solid var(--sl-color-hairline);padding:0.75rem 1rem;border-radius:0.375rem;overflow-x:auto;line-height:1.7;font-size:0.85em;"><code><strong>ntp master</strong> <em>3</em>
+<span style="color:var(--sl-color-green);">! or, more commonly, just let the device relay its synced time:</span>
+<strong>ntp server</strong> <em>192.0.2.1</em></code></pre>
 
 ### Verification (IOS-XE)
 
-```text
-show ntp status
-show ntp associations
-show ntp associations detail
-show clock detail
-```
+<pre style="background:var(--sl-color-gray-6);color:var(--sl-color-white);border:1px solid var(--sl-color-hairline);padding:0.75rem 1rem;border-radius:0.375rem;overflow-x:auto;line-height:1.7;font-size:0.85em;"><code><strong>show ntp status</strong>
+<strong>show ntp associations</strong>
+<strong>show ntp associations detail</strong>
+<strong>show clock detail</strong></code></pre>
 
 `show ntp associations` — look for a `*` next to the peer, which marks it as the currently selected synchronization source; `+` indicates a candidate, and a blank/`~` indicates unreachable or not configured for synchronization.
 
@@ -86,48 +78,40 @@ NX-OS syntax is similar but uses `feature ntp` in some releases/platforms and sl
 
 ### Basic client configuration
 
-```text
-! Some platforms require enabling the feature first
-feature ntp
+<pre style="background:var(--sl-color-gray-6);color:var(--sl-color-white);border:1px solid var(--sl-color-hairline);padding:0.75rem 1rem;border-radius:0.375rem;overflow-x:auto;line-height:1.7;font-size:0.85em;"><code><span style="color:var(--sl-color-green);">! Some platforms require enabling the feature first</span>
+<strong>feature ntp</strong>
 
-! Configure NTP servers
-ntp server 192.0.2.1 prefer use-vrf management
-ntp server 192.0.2.2 use-vrf management
+<span style="color:var(--sl-color-green);">! Configure NTP servers</span>
+<strong>ntp server</strong> <em>192.0.2.1</em> <strong>prefer use-vrf</strong> <em>management</em>
+<strong>ntp server</strong> <em>192.0.2.2</em> <strong>use-vrf</strong> <em>management</em>
 
-! Source interface for NTP requests
-ntp source-interface mgmt0
+<span style="color:var(--sl-color-green);">! Source interface for NTP requests</span>
+<strong>ntp source-interface</strong> <em>mgmt0</em>
 
-! Timezone
-clock timezone EST -5 0
-clock summer-time EDT 2 Sunday March 02:00 1 Sunday November 02:00 60
-```
+<span style="color:var(--sl-color-green);">! Timezone</span>
+<strong>clock timezone</strong> <em>EST -5 0</em>
+<strong>clock summer-time</strong> <em>EDT 2 Sunday March 02:00 1 Sunday November 02:00 60</em></code></pre>
 
 Note the `use-vrf` keyword — on Nexus switches, NTP servers are frequently reached out of the `management` VRF via the `mgmt0` interface, so the VRF must be specified explicitly or NTP traffic won't route correctly.
 
 ### NTP authentication
 
-```text
-ntp authenticate
-ntp authentication-key 1 md5 MyStrongKey123
-ntp trusted-key 1
-ntp server 192.0.2.1 key 1 prefer use-vrf management
-```
+<pre style="background:var(--sl-color-gray-6);color:var(--sl-color-white);border:1px solid var(--sl-color-hairline);padding:0.75rem 1rem;border-radius:0.375rem;overflow-x:auto;line-height:1.7;font-size:0.85em;"><code><strong>ntp authenticate</strong>
+<strong>ntp authentication-key</strong> <em>1</em> <strong>md5</strong> <em>MyStrongKey123</em>
+<strong>ntp trusted-key</strong> <em>1</em>
+<strong>ntp server</strong> <em>192.0.2.1</em> <strong>key</strong> <em>1</em> <strong>prefer use-vrf</strong> <em>management</em></code></pre>
 
 ### Acting as an NTP server / distribution
 
-```text
-ntp master 3
-ntp peer 192.0.2.3 use-vrf default
-```
+<pre style="background:var(--sl-color-gray-6);color:var(--sl-color-white);border:1px solid var(--sl-color-hairline);padding:0.75rem 1rem;border-radius:0.375rem;overflow-x:auto;line-height:1.7;font-size:0.85em;"><code><strong>ntp master</strong> <em>3</em>
+<strong>ntp peer</strong> <em>192.0.2.3</em> <strong>use-vrf</strong> <em>default</em></code></pre>
 
 ### Verification (NX-OS)
 
-```text
-show ntp peer-status
-show ntp peers
-show clock
-show running-config ntp
-```
+<pre style="background:var(--sl-color-gray-6);color:var(--sl-color-white);border:1px solid var(--sl-color-hairline);padding:0.75rem 1rem;border-radius:0.375rem;overflow-x:auto;line-height:1.7;font-size:0.85em;"><code><strong>show ntp peer-status</strong>
+<strong>show ntp peers</strong>
+<strong>show clock</strong>
+<strong>show running-config ntp</strong></code></pre>
 
 `show ntp peer-status` — the `sys.peer` column marks the currently selected reference; `st` shows the stratum of each peer.
 

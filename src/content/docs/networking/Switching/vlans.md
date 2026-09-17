@@ -82,19 +82,17 @@ flowchart TB
 
 ## Verification commands
 
-```text
-! IOS-XE
-show vlan brief
-show vlan id 100
-show interfaces trunk
-show spanning-tree vlan 100
-show vtp status
+<pre style="background:var(--sl-color-gray-6);color:var(--sl-color-white);border:1px solid var(--sl-color-hairline);padding:0.75rem 1rem;border-radius:0.375rem;overflow-x:auto;line-height:1.7;font-size:0.85em;"><code><span style="color:var(--sl-color-green);">! IOS-XE</span>
+<strong>show vlan brief</strong>
+<strong>show vlan id</strong> <em>100</em>
+<strong>show interfaces trunk</strong>
+<strong>show spanning-tree vlan</strong> <em>100</em>
+<strong>show vtp status</strong>
 
-! NX-OS
-show vlan brief
-show vlan internal usage
-show interface trunk
-show spanning-tree vlan 100
-show vpc consistency-parameters vlans
-show nve vni          ! VXLAN VLAN-to-VNI mapping
-```
+<span style="color:var(--sl-color-green);">! NX-OS</span>
+<strong>show vlan brief</strong>
+<strong>show vlan internal usage</strong>
+<strong>show interface trunk</strong>
+<strong>show spanning-tree vlan</strong> <em>100</em>
+<strong>show vpc consistency-parameters vlans</strong>
+<strong>show nve vni</strong>          <span style="color:var(--sl-color-green);">! VXLAN VLAN-to-VNI mapping</span></code></pre>
