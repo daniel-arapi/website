@@ -5,6 +5,4 @@ sidebar:
   order: 2
 ---
 
-# Switching
-
 Notes on switching technologies, protocols, and configuration.

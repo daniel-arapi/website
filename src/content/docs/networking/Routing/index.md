@@ -5,6 +5,4 @@ sidebar:
   order: 3
 ---
 
-# Routing
-
 Notes on routing technologies, protocols, and configuration.

@@ -5,6 +5,4 @@ sidebar:
   order: 1
 ---
 
-# Fundamentals
-
 Notes on foundational networking concepts.

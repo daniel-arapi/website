@@ -5,6 +5,4 @@ sidebar:
   order: 0
 ---
 
-# Networking
-
 Technical notes covering networking fundamentals, protocols, architecture, configuration, and troubleshooting.

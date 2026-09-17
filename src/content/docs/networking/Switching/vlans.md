@@ -3,8 +3,6 @@ title: VLANs
 description: What a VLAN is, why it's needed, which services depend on it, and standard vs. Cisco IOS-XE/NX-OS VLAN constraints.
 ---
 
-# VLANs
-
 ## What is a VLAN?
 
 A VLAN (Virtual LAN) is a logical broadcast domain created inside one or more physical switches. Ports assigned to the same VLAN behave as if they were on their own isolated switch, even though they may be spread across many physical switches — and ports in different VLANs cannot communicate without a Layer 3 device (a router or a switch's routing engine) forwarding between them.

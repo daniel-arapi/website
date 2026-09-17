@@ -3,8 +3,6 @@ title: NTP
 description: What NTP is, why it's needed, and how to implement it on Cisco IOS-XE and NX-OS.
 ---
 
-# NTP (Network Time Protocol)
-
 ## What is NTP?
 
 NTP synchronizes the clocks of devices across a network to a common, accurate time source. It's a hierarchical protocol: each server has a **stratum** number indicating its distance from an authoritative reference clock (stratum 0 — typically a GPS or atomic clock). Stratum 1 servers are directly connected to a stratum 0 source; stratum 2 servers sync from stratum 1; and so on, up to stratum 15 (stratum 16 means "unsynchronized").

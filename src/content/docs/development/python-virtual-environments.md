@@ -3,8 +3,6 @@ title: Python Virtual Environments
 description: What Python virtual environments are, why they're needed, and how to create and manage them with venv, uv, and pyenv.
 ---
 
-# Python Virtual Environments
-
 ## What is a virtual environment?
 
 A Python virtual environment is an isolated directory containing its own Python interpreter (or a link to one) and its own set of installed packages, separate from the system Python and from other projects. Activating one changes your shell's `python` and `pip` to point at that isolated copy instead of the global installation.
