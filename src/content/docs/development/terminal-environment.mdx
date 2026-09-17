@@ -40,10 +40,14 @@ A fast terminal emulator plus a handful of modern CLI replacements (`ls`, `cd`, 
      </TabItem>
      <TabItem label="Linux">
        ```bash
-       # Arch
-       pacman -S ghostty
+       # Arch Linux
+       sudo pacman -S ghostty
 
-       # Or build from source / check ghostty.org for your distro's package
+       # Ubuntu — no official apt package yet; download the latest .deb
+       # from https://ghostty.org/download or build from source (needs Zig)
+
+       # Red Hat / Fedora — no official dnf package yet; check
+       # https://ghostty.org/download for a COPR repo, or build from source
        ```
      </TabItem>
      <TabItem label="Windows">
@@ -83,11 +87,17 @@ A fast terminal emulator plus a handful of modern CLI replacements (`ls`, `cd`, 
      </TabItem>
      <TabItem label="Linux">
        ```bash
-       # Arch
-       pacman -S eza zoxide fzf
+       # Arch Linux
+       sudo pacman -S eza zoxide fzf
 
-       # Debian/Ubuntu: eza and zoxide via their install scripts, fzf via apt
-       sudo apt install fzf
+       # Ubuntu
+       sudo apt install fzf zoxide
+       # eza isn't always in the default repos yet — if `apt install eza` fails,
+       # add its apt repo (see https://github.com/eza-community/eza/blob/main/INSTALL.md)
+
+       # Red Hat / Fedora
+       sudo dnf install fzf zoxide eza
+       # On RHEL proper (not Fedora), enable EPEL first: sudo dnf install epel-release
        ```
      </TabItem>
      <TabItem label="Windows">
@@ -148,6 +158,10 @@ A fast terminal emulator plus a handful of modern CLI replacements (`ls`, `cd`, 
      </TabItem>
      <TabItem label="Linux">
        ```bash
+       # Arch Linux
+       sudo pacman -S starship
+
+       # Ubuntu, Red Hat / Fedora, or any other distro
        curl -sS https://starship.rs/install.sh | sh
        ```
      </TabItem>
@@ -208,8 +222,15 @@ git branch | fzf
     # macOS
     brew install ripgrep bat fd
 
-    # Linux (Arch)
-    pacman -S ripgrep bat fd
+    # Arch Linux
+    sudo pacman -S ripgrep bat fd
+
+    # Ubuntu — fd's binary is named `fdfind` to avoid a name clash
+    sudo apt install ripgrep bat fd-find
+    ln -s $(which fdfind) ~/.local/bin/fd
+
+    # Red Hat / Fedora (enable EPEL first on RHEL: sudo dnf install epel-release)
+    sudo dnf install ripgrep bat fd-find
 
     # Windows
     winget install BurntSushi.ripgrep.MSVC sharkdp.bat sharkdp.fd
@@ -228,28 +249,37 @@ git branch | fzf
   </TabItem>
   <TabItem label="History & sessions">
     ```bash
-    # atuin: searchable, contextual shell history (replaces Ctrl+R) — cross-platform
-    brew install atuin           # macOS
-    pacman -S atuin               # Linux (Arch)
-    winget install atuinsh.atuin  # Windows
+    # atuin: searchable, contextual shell history (replaces Ctrl+R)
+    brew install atuin                          # macOS
+    sudo pacman -S atuin                          # Arch Linux
+    curl -sS https://setup.atuin.sh | bash        # Ubuntu, Red Hat / Fedora
+    winget install atuinsh.atuin                  # Windows
 
     atuin init zsh | source       # or: bash, powershell, fish
     ```
 
     ```bash
-    # tmux or zellij: terminal multiplexer for persistent sessions
-    # macOS/Linux only — on Windows, use these inside WSL
-    brew install tmux
-    # or, a more modern alternative with sane defaults:
-    brew install zellij
+    # tmux: terminal multiplexer for persistent sessions
+    # macOS/Linux only — on Windows, use it inside WSL
+    brew install tmux             # macOS
+    sudo pacman -S tmux            # Arch Linux
+    sudo apt install tmux          # Ubuntu
+    sudo dnf install tmux          # Red Hat / Fedora
+
+    # zellij: a more modern alternative with sane defaults
+    # packaged on Arch; on Ubuntu/RHEL, install via cargo or a prebuilt binary
+    sudo pacman -S zellij
+    cargo install --locked zellij
     ```
   </TabItem>
   <TabItem label="Git & diffs">
     ```bash
-    # delta: syntax-highlighted, side-by-side git diffs — cross-platform
-    brew install git-delta           # macOS
-    pacman -S git-delta               # Linux (Arch)
-    winget install dandavison.delta   # Windows
+    # delta: syntax-highlighted, side-by-side git diffs
+    brew install git-delta                  # macOS
+    sudo pacman -S git-delta                  # Arch Linux
+    sudo apt install git-delta                # Ubuntu (22.10+ / Debian 12+)
+    sudo dnf install git-delta                # Red Hat / Fedora
+    winget install dandavison.delta           # Windows
     ```
 
     ```ini
@@ -267,7 +297,10 @@ git branch | fzf
     ```bash
     # direnv: auto-load/unload environment variables per directory
     # macOS/Linux only — no native PowerShell hook; use it inside WSL on Windows
-    brew install direnv
+    brew install direnv                       # macOS
+    sudo pacman -S direnv                       # Arch Linux
+    sudo apt install direnv                     # Ubuntu
+    sudo dnf install direnv                     # Red Hat / Fedora (EPEL on RHEL)
     ```
 
     ```bash
