@@ -5,14 +5,14 @@ description: How to console into a network device or server from macOS and Windo
 
 import { Steps, Tabs, TabItem, Aside } from '@astrojs/starlight/components';
 
-Console access is a direct, out-of-band connection to a device's command line over a serial link — no IP address, network connectivity, or SSH required. It's how you configure a switch or router for the first time (before it has an IP), and how you recover a device that's been misconfigured badly enough that the network path to it is gone.
+Console access is a direct, [out-of-band](/website/networking/fundamentals/out-of-band-management/) connection to a device's command line over a serial link — no IP address, network connectivity, or SSH required. It's how you configure a switch or router for the first time (before it has an IP), and how you recover a device that's been misconfigured badly enough that the network path to it is gone.
 
 ## Why console access matters
 
 - **Zero-touch initial setup** — A factory-default switch or router has no IP address and no way to be reached over the network. Console is the only way in.
-- **Out-of-band recovery** — If a bad ACL, VLAN, or routing change locks you out over the network, the console port still works because it doesn't depend on the network at all.
+- **[Out-of-band](/website/networking/fundamentals/out-of-band-management/) recovery** — If a bad ACL, VLAN, or routing change locks you out over the network, the console port still works because it doesn't depend on the network at all.
 - **Password recovery / ROMMON access** — Interrupting boot into ROMMON (Cisco) or a bootloader requires being on the console at the exact right moment; SSH can't do this.
-- **Servers, too** — Bare-metal servers have the same problem before an OS/network stack is configured, or when the OS itself is unresponsive. Physical serial console, or its modern out-of-band equivalent (IPMI/iLO/iDRAC), fills the same role.
+- **Servers, too** — Bare-metal servers have the same problem before an OS/network stack is configured, or when the OS itself is unresponsive. Physical serial console, or its modern [out-of-band](/website/networking/fundamentals/out-of-band-management/) equivalent (IPMI/iLO/iDRAC), fills the same role.
 
 ## Cable and port types
 
@@ -128,7 +128,7 @@ Keep console access as the fallback for initial bring-up, password recovery, and
 Servers support console access two ways:
 
 - **Physical serial port** — Same idea as a network device: a serial/USB cable into the server's serial port, opened with `screen` (macOS) or PuTTY (Windows) at the OS's configured console baud rate (Linux commonly uses `ttyS0` at 115200).
-- **Baseboard Management Controller (BMC)** — Modern servers (HPE iLO, Dell iDRAC, generic IPMI) expose an out-of-band management interface over its own dedicated network port, reachable via a web UI or a dedicated remote-console app, independent of the server's own OS or network stack. This is the server equivalent of a switch's console port — it works even if the OS has crashed or never booted.
+- **Baseboard Management Controller (BMC)** — Modern servers (HPE iLO, Dell iDRAC, generic IPMI) expose an [out-of-band](/website/networking/fundamentals/out-of-band-management/) management interface over its own dedicated network port, reachable via a web UI or a dedicated remote-console app, independent of the server's own OS or network stack. This is the server equivalent of a switch's console port — it works even if the OS has crashed or never booted.
 
 ## Troubleshooting
 

@@ -1,0 +1,37 @@
+---
+title: Out-of-Band (OOB) Management
+description: What out-of-band management is, how it differs from in-band access, and the common ways to implement it.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**Out-of-band (OOB) management** is any way of administering a device that doesn't depend on the network path the device normally carries production traffic over. **In-band management** is the opposite: managing a device over the same network it's forwarding traffic on (e.g., SSH to a switch's management VLAN over the same links carrying user traffic).
+
+The distinction matters because in-band access has a circular dependency: if the network breaks, the thing you'd use to fix it — the network — is also broken.
+
+## Why it matters
+
+- **Recovery from self-inflicted outages** — A bad ACL, routing change, or VLAN misconfiguration can lock you out of a device over the network. OOB access doesn't depend on that same network, so it still works.
+- **Zero-touch initial setup** — A factory-default device has no IP address and no network path at all yet. OOB is the only way in until basic connectivity is configured.
+- **Independent of the OS/control plane** — On a server, OOB management (see below) works even if the OS has crashed, hasn't booted, or its network stack is down — because it runs on separate hardware.
+- **Security separation** — Keeping management traffic on a dedicated OOB path means it isn't exposed to the same network segments as user/production traffic, and can be protected by much tighter access controls.
+
+## Common forms of OOB management
+
+- **Physical console access** — A serial/USB console cable connected directly to a switch, router, or server, bypassing the network entirely. See [Console Access to Servers and Network Devices](/website/networking/fundamentals/console-access/) for cables, drivers, and terminal emulator setup on macOS and Windows.
+- **A dedicated management VLAN** — Still "in-band" over the same physical switch fabric, but logically separated from user traffic at Layer 2/3, with its own ACLs restricting who can reach it. Common on VLAN-segmented networks where a fully separate physical OOB network isn't practical.
+- **A dedicated OOB network** — A physically separate network (its own switches, cabling, and often its own internet uplink) connecting only to devices' management interfaces, so it stays reachable even if the production network is completely down. Common in data centers and larger enterprise networks.
+- **Server BMCs (IPMI/iLO/iDRAC)** — A Baseboard Management Controller is a small independent computer built into a physical server, with its own network port, that can power-cycle the server, mount virtual media, and provide full remote console access — all independent of the server's own OS and main network stack.
+
+<Aside type="tip">
+  If you only remember one thing: **in-band breaks together with the network; out-of-band doesn't.** Design management access assuming the production network will, at some point, be the thing that's broken.
+</Aside>
+
+## In-band vs. out-of-band, at a glance
+
+| | In-band | Out-of-band |
+|---|---|---|
+| Depends on production network | Yes | No (or only loosely, e.g. a separate management VLAN) |
+| Works during a network outage | No | Yes |
+| Works before initial IP config | No | Yes |
+| Typical examples | SSH/HTTPS over the LAN | Console cable, dedicated OOB network, server BMC |

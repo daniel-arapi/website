@@ -47,7 +47,7 @@ flowchart TB
 - **Voice VLANs** — IP phones are placed in a separate voice VLAN from the attached PC to apply QoS trust and prioritize voice traffic without needing a separate physical switch port.
 - **Wireless LAN controllers/APs** — SSIDs are commonly mapped 1:1 to VLANs, so wireless traffic inherits the same segmentation as wired.
 - **Security zones (guest, IoT, servers, DMZ)** — Firewalls and ACLs are applied at the VLAN's Layer 3 boundary, so the VLAN is the enforcement unit.
-- **Out-of-band management** — A dedicated management VLAN keeps device administration (SSH, SNMP) separate from user traffic.
+- **[Out-of-band](/website/networking/fundamentals/out-of-band-management/) management** — A dedicated management VLAN keeps device administration (SSH, SNMP) separate from user traffic.
 - **Multicast (IGMP snooping)** — Snooping tables and multicast forwarding boundaries are maintained per VLAN.
 - **802.1X / Network Access Control** — RADIUS servers can dynamically assign a VLAN to a port/user at authentication time (e.g., quarantine VLAN for failed posture checks).
 
