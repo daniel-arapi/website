@@ -1,0 +1,35 @@
+tags:
+  networking:
+    label: "Networking"
+    description: "Networking fundamentals, protocols, and design"
+    color: "#f97316"
+
+  switching:
+    label: "Switching"
+    description: "VLANs, trunking, and Layer 2 topics"
+    color: "#f97316"
+
+  cisco:
+    label: "Cisco"
+    description: "Cisco IOS-XE and NX-OS specific content"
+    color: "#10b981"
+
+  automation:
+    label: "Automation"
+    description: "Network and infrastructure automation"
+    color: "#3b82f6"
+
+  python:
+    label: "Python"
+    description: "Python tooling and environments"
+    color: "#3b82f6"
+
+  linux:
+    label: "Linux"
+    description: "Linux systems and infrastructure"
+    color: "#a855f7"
+
+  development:
+    label: "Development"
+    description: "Development tooling and workflow"
+    color: "#a855f7"
