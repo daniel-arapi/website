@@ -6,6 +6,8 @@ import mermaid from 'astro-mermaid';
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://daniel-arapi.github.io',
+  base: '/website',
   integrations: [
 	mermaid(),
     starlight({
