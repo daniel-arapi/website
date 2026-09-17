@@ -1,17 +1,21 @@
 ---
 title: Recommended Terminal Environment
-description: A modern terminal setup — Ghostty, a color theme, eza, zoxide, fuzzy search, and other popular CLI tools — with install and config steps.
+description: A modern terminal setup — Ghostty, a color theme, eza, zoxide, fuzzy search, and other popular CLI tools — with install and config steps for macOS, Linux, and Windows.
 ---
 
 import { Steps, Tabs, TabItem, Aside } from '@astrojs/starlight/components';
 
-A fast terminal emulator plus a handful of modern CLI replacements (`ls`, `cd`, `grep`, `history`) removes most of the daily friction of working in a shell. This guide sets up that stack step by step, then covers a few other popular tools worth knowing about.
+A fast terminal emulator plus a handful of modern CLI replacements (`ls`, `cd`, `grep`, `history`) removes most of the daily friction of working in a shell. This guide sets up that stack step by step, then covers a few other popular tools worth knowing about. Every tool here runs on **macOS, Linux, and Windows**; steps call out per-OS differences where they exist.
+
+<Aside type="note">
+  On Windows, PowerShell is assumed throughout (edit `$PROFILE`). If you use WSL instead, just follow the Linux instructions inside your WSL shell.
+</Aside>
 
 ## The stack
 
 | Tool | Replaces | What it adds |
 |---|---|---|
-| [Ghostty](https://ghostty.org/) | Terminal.app / iTerm2 | GPU-accelerated, fast startup, native, minimal config |
+| [Ghostty](https://ghostty.org/) | Terminal.app / iTerm2 / Windows Terminal | GPU-accelerated, fast startup, native, minimal config |
 | A color theme | default 16-color palette | consistent, readable colors across the terminal and prompt |
 | [eza](https://github.com/eza-community/eza) | `ls` | icons, git status, tree view, colorized by file type |
 | [zoxide](https://github.com/ajeetdsouza/zoxide) | `cd` | jump to frecently-used directories by partial name |
@@ -42,9 +46,14 @@ A fast terminal emulator plus a handful of modern CLI replacements (`ls`, `cd`, 
        # Or build from source / check ghostty.org for your distro's package
        ```
      </TabItem>
+     <TabItem label="Windows">
+       ```powershell
+       winget install ghostty
+       ```
+     </TabItem>
    </Tabs>
 
-   Ghostty reads config from `~/.config/ghostty/config` on both platforms.
+   Config lives at `~/.config/ghostty/config` on macOS/Linux, and `%APPDATA%\ghostty\config` on Windows.
 
 2. **Pick a color theme.**
 
@@ -66,40 +75,105 @@ A fast terminal emulator plus a handful of modern CLI replacements (`ls`, `cd`, 
 
 3. **Install eza, zoxide, and fzf.**
 
-   ```bash
-   brew install eza zoxide fzf
-   ```
+   <Tabs>
+     <TabItem label="macOS">
+       ```bash
+       brew install eza zoxide fzf
+       ```
+     </TabItem>
+     <TabItem label="Linux">
+       ```bash
+       # Arch
+       pacman -S eza zoxide fzf
 
-   Then wire them into your shell profile (`~/.zshrc` or `~/.bashrc`):
+       # Debian/Ubuntu: eza and zoxide via their install scripts, fzf via apt
+       sudo apt install fzf
+       ```
+     </TabItem>
+     <TabItem label="Windows">
+       ```powershell
+       winget install eza-community.eza ajeetdsouza.zoxide junegunn.fzf
+       ```
+     </TabItem>
+   </Tabs>
 
-   ```bash
-   # eza aliases
-   alias ls="eza --icons"
-   alias ll="eza -l --icons --git"
-   alias lt="eza --tree --icons"
+   Then wire them into your shell profile:
 
-   # zoxide (replaces cd with a frecency-based jumper)
-   eval "$(zoxide init zsh)"   # or: bash, fish, etc.
-   alias cd="z"
+   <Tabs>
+     <TabItem label="zsh / bash (~/.zshrc or ~/.bashrc)">
+       ```bash
+       # eza aliases
+       alias ls="eza --icons"
+       alias ll="eza -l --icons --git"
+       alias lt="eza --tree --icons"
 
-   # fzf keybindings and fuzzy completion (Ctrl+R history, Ctrl+T files, Alt+C cd)
-   source <(fzf --zsh)         # or: fzf --bash
-   ```
+       # zoxide (replaces cd with a frecency-based jumper)
+       eval "$(zoxide init zsh)"   # or: bash
+       alias cd="z"
 
-   Restart your shell or `source ~/.zshrc` to pick up the changes.
+       # fzf keybindings and fuzzy completion (Ctrl+R history, Ctrl+T files, Alt+C cd)
+       source <(fzf --zsh)         # or: fzf --bash
+       ```
+
+       Restart your shell or `source ~/.zshrc` to pick up the changes.
+     </TabItem>
+     <TabItem label="PowerShell ($PROFILE)">
+       ```powershell
+       # eza aliases
+       function ls { eza --icons @args }
+       function ll { eza -l --icons --git @args }
+       function lt { eza --tree --icons @args }
+
+       # zoxide (replaces cd with a frecency-based jumper)
+       Invoke-Expression (& { (zoxide init powershell | Out-String) })
+       function cd { z @args }
+
+       # fzf keybindings (requires the PSFzf module)
+       Install-Module -Name PSFzf -Scope CurrentUser
+       Import-Module PSFzf
+       Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
+       ```
+
+       Restart PowerShell or `. $PROFILE` to pick up the changes.
+     </TabItem>
+   </Tabs>
 
 4. **Install starship for the prompt.**
 
-   ```bash
-   brew install starship
-   ```
+   <Tabs>
+     <TabItem label="macOS">
+       ```bash
+       brew install starship
+       ```
+     </TabItem>
+     <TabItem label="Linux">
+       ```bash
+       curl -sS https://starship.rs/install.sh | sh
+       ```
+     </TabItem>
+     <TabItem label="Windows">
+       ```powershell
+       winget install starship
+       ```
+     </TabItem>
+   </Tabs>
 
-   ```bash
-   # Add to the end of ~/.zshrc (or ~/.bashrc)
-   eval "$(starship init zsh)"
-   ```
+   <Tabs>
+     <TabItem label="zsh / bash">
+       ```bash
+       # Add to the end of ~/.zshrc (or ~/.bashrc)
+       eval "$(starship init zsh)"   # or: bash
+       ```
+     </TabItem>
+     <TabItem label="PowerShell">
+       ```powershell
+       # Add to the end of $PROFILE
+       Invoke-Expression (&starship init powershell)
+       ```
+     </TabItem>
+   </Tabs>
 
-   Starship auto-detects context (git branch/status, language versions, exit codes) and renders it in the prompt with no further config needed. Customize via `~/.config/starship.toml` if you want to change what's shown.
+   Starship auto-detects context (git branch/status, language versions, exit codes) and renders it in the prompt with no further config needed. Customize via `~/.config/starship.toml` (or `%USERPROFILE%\.config\starship.toml` on Windows) if you want to change what's shown.
 
 </Steps>
 
@@ -131,8 +205,17 @@ git branch | fzf
 <Tabs>
   <TabItem label="Search & files">
     ```bash
+    # macOS
     brew install ripgrep bat fd
 
+    # Linux (Arch)
+    pacman -S ripgrep bat fd
+
+    # Windows
+    winget install BurntSushi.ripgrep.MSVC sharkdp.bat sharkdp.fd
+    ```
+
+    ```bash
     # Fast recursive search, respects .gitignore
     rg "TODO"
 
@@ -145,11 +228,17 @@ git branch | fzf
   </TabItem>
   <TabItem label="History & sessions">
     ```bash
-    # atuin: searchable, contextual shell history (replaces Ctrl+R)
-    brew install atuin
-    atuin init zsh | source
+    # atuin: searchable, contextual shell history (replaces Ctrl+R) — cross-platform
+    brew install atuin           # macOS
+    pacman -S atuin               # Linux (Arch)
+    winget install atuinsh.atuin  # Windows
 
+    atuin init zsh | source       # or: bash, powershell, fish
+    ```
+
+    ```bash
     # tmux or zellij: terminal multiplexer for persistent sessions
+    # macOS/Linux only — on Windows, use these inside WSL
     brew install tmux
     # or, a more modern alternative with sane defaults:
     brew install zellij
@@ -157,12 +246,14 @@ git branch | fzf
   </TabItem>
   <TabItem label="Git & diffs">
     ```bash
-    # delta: syntax-highlighted, side-by-side git diffs
-    brew install git-delta
+    # delta: syntax-highlighted, side-by-side git diffs — cross-platform
+    brew install git-delta           # macOS
+    pacman -S git-delta               # Linux (Arch)
+    winget install dandavison.delta   # Windows
     ```
 
     ```ini
-    # ~/.gitconfig
+    # ~/.gitconfig (or %USERPROFILE%\.gitconfig on Windows) — same on every OS
     [core]
       pager = delta
     [interactive]
@@ -175,35 +266,57 @@ git branch | fzf
   <TabItem label="Directory env">
     ```bash
     # direnv: auto-load/unload environment variables per directory
+    # macOS/Linux only — no native PowerShell hook; use it inside WSL on Windows
     brew install direnv
     ```
 
     ```bash
     # Add to the end of ~/.zshrc
-    eval "$(direnv hook zsh)"
+    eval "$(direnv hook zsh)"   # or: bash, fish
     ```
   </TabItem>
 </Tabs>
 
 ## Verification
 
-```bash
-# Confirm each tool is installed and on PATH
-ghostty --version
-eza --version
-zoxide --version
-fzf --version
-starship --version
+<Tabs>
+  <TabItem label="zsh / bash">
+    ```bash
+    # Confirm each tool is installed and on PATH
+    ghostty --version
+    eza --version
+    zoxide --version
+    fzf --version
+    starship --version
 
-# Confirm shell integrations actually loaded (should print a function, not "not found")
-type z
-type __fzf_history__ 2>/dev/null || type fzf 
+    # Confirm shell integrations actually loaded (should print a function, not "not found")
+    type z
+    type fzf
 
-# Confirm starship is the active prompt (look for PS1 referencing starship, or just check the prompt itself renders git/version info)
-echo $STARSHIP_SHELL
-```
+    # Confirm starship is the active prompt
+    echo $STARSHIP_SHELL
+    ```
+  </TabItem>
+  <TabItem label="PowerShell">
+    ```powershell
+    # Confirm each tool is installed and on PATH
+    ghostty --version
+    eza --version
+    zoxide --version
+    fzf --version
+    starship --version
 
-If a tool's alias or keybinding doesn't work after installing, the most common cause is forgetting to add its `init`/`hook` line to your shell profile, or not restarting the shell after editing it.
+    # Confirm shell integrations actually loaded (should print a function, not an error)
+    Get-Command z
+    Get-Module PSFzf
+
+    # Confirm starship is the active prompt
+    $env:STARSHIP_SHELL
+    ```
+  </TabItem>
+</Tabs>
+
+If a tool's alias or keybinding doesn't work after installing, the most common cause is forgetting to add its `init`/`hook` line to your shell profile, or not restarting the shell (or `. $PROFILE` / `source ~/.zshrc`) after editing it.
 
 ## Summary
 
@@ -213,4 +326,5 @@ If a tool's alias or keybinding doesn't work after installing, the most common c
 - **zoxide** — jump directories by frecency instead of typing full paths.
 - **fzf** — fuzzy-search history, files, branches, or any piped list.
 - **starship** — a fast, informative, git-aware prompt.
-- Round it out with **ripgrep**, **bat**, **fd** for search/inspection, **atuin** for richer history, **tmux/zellij** for persistent sessions, **delta** for readable git diffs, and **direnv** for per-project environment variables.
+- Round it out with **ripgrep**, **bat**, **fd** for search/inspection, **atuin** for richer history, **delta** for readable git diffs, and **direnv** for per-project environment variables.
+- **tmux/zellij** and **direnv** are macOS/Linux tools with no native Windows support — run them inside WSL if you're on Windows. Everything else in this guide works natively on all three platforms.
