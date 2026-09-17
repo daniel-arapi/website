@@ -1,0 +1,225 @@
+---
+title: Python Virtual Environments
+description: What Python virtual environments are, why they're needed, and how to create and manage them with venv, uv, and pyenv.
+---
+
+import { Steps, Tabs, TabItem, Aside } from '@astrojs/starlight/components';
+
+This guide explains what virtual environments are and why you need them, then walks through setting one up with **uv + pyenv** — the recommended combo — step by step. Alternatives (plain `uv`, `venv`, `conda`) are covered afterward for when you don't need `pyenv`.
+
+## What is a virtual environment?
+
+A Python virtual environment is an isolated directory containing its own Python interpreter (or a link to one) and its own set of installed packages, separate from the system Python and from other projects. Activating one changes your shell's `python` and `pip` to point at that isolated copy instead of the global installation.
+
+Each environment has its own `site-packages` directory, so packages installed in one environment are invisible to another, and to the system interpreter.
+
+## Why they're needed
+
+- **Dependency isolation** — Project A can depend on `requests==2.28`, Project B on `requests==2.31`, without conflict. Without isolation, both would fight over the same global `site-packages`.
+- **Reproducibility** — A project's dependencies are pinned and recorded (e.g., in `requirements.txt` or `pyproject.toml`), so the same environment can be recreated on another machine or in CI.
+- **Avoiding system Python pollution** — Modern OSes (macOS, most Linux distros) ship a Python used by system tools. Installing packages into it with `pip install --global` can break those tools or get wiped out by an OS update. `pip` itself refuses this by default on newer systems ("externally managed environment" error).
+- **Clean uninstall** — Deleting a project's environment is just deleting a directory; nothing leaks into other projects or the system.
+- **Testing across versions** — Combined with a Python version manager, you can verify a project works on Python 3.10, 3.11, 3.12, etc., without juggling multiple system-wide installs.
+
+## Choosing a tool
+
+| Tool | Manages Python versions | Manages virtual environments | Manages dependencies |
+|---|---|---|---|
+| `venv` | No | Yes | No (use with `pip`) |
+| `virtualenv` | No | Yes | No (use with `pip`) |
+| `pyenv` | Yes | No (needs `pyenv-virtualenv` plugin) | No |
+| `conda` | Yes | Yes | Yes |
+| `uv` | Yes | Yes | Yes |
+
+`uv` alone already does everything a project needs day to day. Pairing it with `pyenv` makes sense when you want one consistent way to manage Python versions shared with other tools on your machine, or you're already using `pyenv`. The walkthrough below sets up that combo; see [Alternatives](#alternatives) if you'd rather use `uv` on its own, or a different tool entirely.
+
+## Setting up uv + pyenv
+
+<Steps>
+
+1. **Install pyenv and uv.**
+
+   ```bash
+   # pyenv (macOS via Homebrew)
+   brew install pyenv
+
+   # uv
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   # or: brew install uv
+   ```
+
+2. **Hook pyenv into your shell.**
+
+   Add this to your shell profile (`~/.zshrc` or `~/.bashrc`):
+
+   ```bash
+   export PYENV_ROOT="$HOME/.pyenv"
+   export PATH="$PYENV_ROOT/bin:$PATH"
+   eval "$(pyenv init -)"
+   ```
+
+   Then restart your shell (or run `source ~/.zshrc`) so the changes take effect.
+
+3. **Install a Python version with pyenv.**
+
+   ```bash
+   pyenv install 3.12.6
+   ```
+
+4. **Pin that version to your project.**
+
+   Run this inside your project's directory — it writes a `.python-version` file so `pyenv` always resolves to this version here, regardless of the global default.
+
+   ```bash
+   cd ~/projects/myapp
+   pyenv local 3.12.6
+   ```
+
+5. **Create the virtual environment with uv, pointed at that pyenv Python.**
+
+   ```bash
+   uv venv --python $(pyenv which python)
+   ```
+
+6. **Activate it, or skip activation with `uv run`.**
+
+   ```bash
+   # Activate as normal
+   source .venv/bin/activate
+
+   # Or run commands directly without activating
+   uv run python --version
+   ```
+
+</Steps>
+
+<Aside type="tip">
+  `pyenv` resolves versions in this priority order: the `PYENV_VERSION` shell variable → the nearest `.python-version` file (searched upward from the current directory) → the global default. `pyenv global 3.12.6` sets that default; `pyenv version` shows what's currently active and why.
+</Aside>
+
+### Managing multiple Python versions with pyenv
+
+Once pyenv is set up, this is the day-to-day toolkit for juggling versions across projects:
+
+```bash
+# List versions available to install
+pyenv install --list | grep " 3\.1"
+
+# Install additional versions as you need them
+pyenv install 3.11.9
+
+# List versions installed locally
+pyenv versions
+
+# Set the global default (used everywhere unless overridden)
+pyenv global 3.12.6
+
+# Set a version for just the current shell session
+pyenv shell 3.11.9
+
+# Confirm which version and binary are active
+pyenv version
+python --version
+which python
+```
+
+## Verification
+
+Run these any time you're not sure which Python or environment is actually active — the most common source of confusion is a shell using a different Python than expected.
+
+```bash
+# Path to the active interpreter — should point inside your project's .venv
+python -c "import sys; print(sys.executable)"
+
+# Is a virtual environment active at all? (non-empty if yes)
+echo $VIRTUAL_ENV
+
+# List installed packages in the active environment
+uv pip list
+
+# Check pyenv's resolved version and where it came from
+pyenv version
+
+# Check the Python versions uv itself manages
+uv python list
+
+# Confirm a project's lockfile matches its environment
+uv sync --check
+```
+
+If `sys.executable` doesn't point inside your project's `.venv`, the environment isn't active — or the wrong one is.
+
+## Alternatives
+
+### `uv` on its own (no pyenv)
+
+If you don't need `pyenv` for anything else, `uv` can install and manage Python versions itself — no separate tool required.
+
+<Tabs>
+  <TabItem label="Quick venv">
+    ```bash
+    # List Python versions uv can install
+    uv python list
+
+    # Install one
+    uv python install 3.12
+
+    # Create a venv pinned to it
+    uv venv --python 3.12
+    source .venv/bin/activate
+    ```
+  </TabItem>
+  <TabItem label="Full project workflow">
+    ```bash
+    # Start a new project (creates pyproject.toml, .venv, .python-version)
+    uv init myapp
+    cd myapp
+
+    # Pin the Python version for this project
+    uv python pin 3.12
+
+    # Add/remove dependencies (updates pyproject.toml and uv.lock)
+    uv add requests fastapi
+    uv remove requests
+
+    # Sync the environment to exactly match the lockfile
+    uv sync
+
+    # Run commands inside the project's environment
+    uv run pytest
+    uv run python -m myapp
+    ```
+  </TabItem>
+</Tabs>
+
+### `venv` (standard library)
+
+Built into Python 3.3+, no extra install required. Good for a quick, dependency-free environment when you don't need version management.
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate        # macOS/Linux
+.venv\Scripts\activate           # Windows (PowerShell/cmd)
+
+pip install requests
+deactivate
+```
+
+### `virtualenv` (third-party)
+
+Predates `venv`; still used for extra features (faster creation, more Python version flexibility) and legacy Python 2 support.
+
+```bash
+pip install virtualenv
+virtualenv .venv
+source .venv/bin/activate
+```
+
+### `conda` / `mamba`
+
+Manages both Python versions and non-Python dependencies (C libraries, etc.). Common in data science.
+
+```bash
+conda create -n myproject python=3.11
+conda activate myproject
+```
