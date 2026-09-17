@@ -1,0 +1,17 @@
+/* Light grey sidebar background in light mode (dark mode already has a
+   suitably shaded sidebar by default). */
+:root[data-theme='light'],
+[data-theme='light'] ::backdrop {
+	--sl-color-bg-sidebar: var(--sl-color-gray-6);
+}
+
+@media (prefers-color-scheme: light) {
+	:root:not([data-theme='dark']) {
+		--sl-color-bg-sidebar: var(--sl-color-gray-6);
+	}
+}
+
+/* Drop the main content text one step down the type scale. */
+:root {
+	--sl-text-body: var(--sl-text-sm);
+}

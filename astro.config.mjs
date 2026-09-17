@@ -44,6 +44,8 @@ export default defineConfig({
         PageTitle: './src/components/PageTitle.astro',
       },
 
+      customCss: ['./src/styles/custom.css'],
+
       plugins: [
         starlightImageZoom(),
         starlightLinksValidator(),
