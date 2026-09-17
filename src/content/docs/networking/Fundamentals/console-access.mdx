@@ -1,0 +1,139 @@
+---
+title: Console Access to Servers and Network Devices
+description: How to console into a network device or server from macOS and Windows — cables, drivers, terminal settings, and terminal emulator setup.
+---
+
+import { Steps, Tabs, TabItem, Aside } from '@astrojs/starlight/components';
+
+Console access is a direct, out-of-band connection to a device's command line over a serial link — no IP address, network connectivity, or SSH required. It's how you configure a switch or router for the first time (before it has an IP), and how you recover a device that's been misconfigured badly enough that the network path to it is gone.
+
+## Why console access matters
+
+- **Zero-touch initial setup** — A factory-default switch or router has no IP address and no way to be reached over the network. Console is the only way in.
+- **Out-of-band recovery** — If a bad ACL, VLAN, or routing change locks you out over the network, the console port still works because it doesn't depend on the network at all.
+- **Password recovery / ROMMON access** — Interrupting boot into ROMMON (Cisco) or a bootloader requires being on the console at the exact right moment; SSH can't do this.
+- **Servers, too** — Bare-metal servers have the same problem before an OS/network stack is configured, or when the OS itself is unresponsive. Physical serial console, or its modern out-of-band equivalent (IPMI/iLO/iDRAC), fills the same role.
+
+## Cable and port types
+
+| Connector | Where you'll see it | Notes |
+|---|---|---|
+| RJ45 rollover | Cisco switches/routers (console port, blue cable) | Needs an RJ45-to-USB or RJ45-to-DB9 adapter on the PC end |
+| USB (Type-A, Mini, or Type-C) | Most current Cisco/network gear, many servers | Connects straight to a laptop's USB port — most common today |
+| DB9 serial | Older PCs, some server iLO/service processors | Rare on modern laptops — needs a USB-to-serial adapter |
+
+Whichever cable you use, the terminal settings on the PC side are almost always the same default: **9600 baud, 8 data bits, no parity, 1 stop bit, no flow control** — usually written as **9600 8N1**. Some platforms (larger chassis switches, some server BMCs) default to 115200 instead — check the device's documentation if 9600 shows garbled or no output.
+
+<Aside type="tip">
+  If the screen shows nothing or garbled characters, the two most common causes are the wrong baud rate, or a bad cable/adapter driver — not a misconfigured device.
+</Aside>
+
+## Console access from macOS
+
+<Steps>
+
+1. **Connect the cable and identify the port.**
+
+   ```bash
+   ls /dev/tty.* /dev/cu.*
+   ```
+
+   Look for an entry like `/dev/tty.usbserial-1420` or `/dev/tty.usbmodem14201`. If nothing new appears after plugging in, the adapter's driver isn't installed yet — see the next step.
+
+2. **Install the USB-to-serial driver, if needed.**
+
+   Most console cables use one of a few common chipsets. macOS includes built-in support for many of them; if your device doesn't show up in step 1, identify and install the matching driver:
+
+   <Tabs>
+     <TabItem label="FTDI">
+       Usually works out of the box on modern macOS. If not, get the driver from [ftdichip.com](https://ftdichip.com/drivers/vcp-drivers/).
+     </TabItem>
+     <TabItem label="Prolific PL2303">
+       Download from [prolific.com.tw](https://www.prolific.com.tw/US/ShowProduct.aspx?p_id=225&pcid=41) — older/counterfeit chips are notoriously unreliable on recent macOS versions.
+     </TabItem>
+     <TabItem label="Cisco USB console">
+       macOS/modern Cisco USB console cables (the ones that plug directly into the device's USB console port) generally work without any extra driver.
+     </TabItem>
+   </Tabs>
+
+3. **Connect with `screen` (built in, no install needed).**
+
+   ```bash
+   screen /dev/tty.usbserial-1420 9600
+   ```
+
+   Replace the device path with the one from step 1, and the baud rate if the platform needs something other than 9600.
+
+4. **Exit `screen` when you're done.**
+
+   Press <kbd>Ctrl</kbd>+<kbd>A</kbd>, then <kbd>K</kbd>, then <kbd>Y</kbd> to confirm — this ends the session cleanly.
+
+</Steps>
+
+<Aside type="note">
+  Prefer a GUI? [CoolTerm](https://freeware.the-meiers.org/) (free) or [Serial](https://apps.apple.com/app/serial/id877615577) (App Store) give you a click-to-connect interface instead of `screen` and remember your settings between sessions.
+</Aside>
+
+## Console access from Windows
+
+<Steps>
+
+1. **Connect the cable and find its COM port.**
+
+   Open **Device Manager** → expand **Ports (COM & LPT)**. Look for an entry like `USB Serial Port (COM4)`. Note the COM number — you'll need it in the terminal app.
+
+2. **Install the driver, if the device doesn't appear.**
+
+   If nothing shows up under **Ports**, or it appears under **Other devices** with a warning icon, install the driver for your adapter's chipset:
+
+   <Tabs>
+     <TabItem label="FTDI">
+       [ftdichip.com/drivers](https://ftdichip.com/drivers/vcp-drivers/)
+     </TabItem>
+     <TabItem label="Prolific PL2303">
+       [prolific.com.tw](https://www.prolific.com.tw/US/ShowProduct.aspx?p_id=225&pcid=41)
+     </TabItem>
+     <TabItem label="Cisco USB console">
+       Cisco publishes a signed driver for its USB console cables — search "Cisco USB console driver" on cisco.com, or check Windows Update, which often installs it automatically.
+     </TabItem>
+   </Tabs>
+
+3. **Install a terminal emulator.**
+
+   Windows has no built-in serial terminal. [PuTTY](https://www.putty.org/) is the standard choice; [Tera Term](https://ttssh2.osdn.jp/index.html.en) is a common alternative with a few more convenience features (logging, macros).
+
+4. **Configure and connect (PuTTY).**
+
+   - Open PuTTY → set **Connection type** to `Serial`.
+   - **Serial line**: the COM port from step 1 (e.g., `COM4`).
+   - **Speed**: `9600` (or the platform's documented rate).
+   - Click **Open**.
+
+   If the session opens to a blank screen, press <kbd>Enter</kbd> a couple of times — many devices don't print anything until they see input.
+
+</Steps>
+
+## Once the device has an IP: switch to SSH
+
+Console access is for the moments a network path doesn't exist yet or has broken. Once a device has a management IP and SSH enabled, use SSH for day-to-day access instead — it's faster, supports copy/paste cleanly, and doesn't require anyone to be physically near the device:
+
+```bash
+ssh admin@192.0.2.1
+```
+
+Keep console access as the fallback for initial bring-up, password recovery, and the rare case where SSH itself is unreachable.
+
+## Servers: physical serial console vs. BMC (IPMI/iLO/iDRAC)
+
+Servers support console access two ways:
+
+- **Physical serial port** — Same idea as a network device: a serial/USB cable into the server's serial port, opened with `screen` (macOS) or PuTTY (Windows) at the OS's configured console baud rate (Linux commonly uses `ttyS0` at 115200).
+- **Baseboard Management Controller (BMC)** — Modern servers (HPE iLO, Dell iDRAC, generic IPMI) expose an out-of-band management interface over its own dedicated network port, reachable via a web UI or a dedicated remote-console app, independent of the server's own OS or network stack. This is the server equivalent of a switch's console port — it works even if the OS has crashed or never booted.
+
+## Troubleshooting
+
+- **Garbled or scrolling nonsense text** — Wrong baud rate; try 9600 or 115200 (the two most common).
+- **Nothing appears at all** — Confirm the correct COM port / `/dev/tty.*` device is selected, the cable is fully seated, and (on Windows) the driver installed without errors in Device Manager.
+- **"Permission denied" on macOS** — Rare, but if it happens, check the device path's permissions (`ls -l /dev/tty.usbserial-*`) rather than reaching for `sudo` as a first fix.
+- **Device shows in Device Manager with a yellow warning icon** — The driver isn't installed or failed; reinstall the correct one for the adapter's chipset from the tabs above.
+- **Rollover vs. straight-through cable** — If using an RJ45 cable with an adapter, make sure it's an actual rollover cable (pins reversed end to end), not a standard straight-through Ethernet patch cable — they look identical but aren't interchangeable.
