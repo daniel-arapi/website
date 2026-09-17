@@ -7,7 +7,7 @@ hero:
   tagline: Networking, automation, infrastructure, and software engineering.
   actions:
     - text: Browse Notes
-      link: /networking/
+      link: /website/networking/
       icon: right-arrow
     - text: GitHub
       link: https://github.com/daniel-arapi/
@@ -15,24 +15,32 @@ hero:
       variant: minimal
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
 
 ## Technical Notes
 
 <CardGrid>
-  <Card title="Networking" icon="seti:network">
-    Routing, switching, network design, protocols, and troubleshooting.
-  </Card>
+  <LinkCard
+    title="Networking"
+    description="Routing, switching, network design, protocols, and troubleshooting."
+    href="/website/networking/"
+  />
 
-  <Card title="Network Automation" icon="setting">
-    Ansible, Python, APIs, source of truth, testing, and automation architecture.
-  </Card>
+  <LinkCard
+    title="Network Automation"
+    description="Ansible, Python, APIs, source of truth, testing, and automation architecture."
+    href="/website/network-automation/"
+  />
 
-  <Card title="Linux & Infrastructure" icon="server">
-    Linux, containers, virtualization, homelab, and infrastructure.
-  </Card>
+  <LinkCard
+    title="Linux & Infrastructure"
+    description="Linux, containers, virtualization, homelab, and infrastructure."
+    href="/website/infrastructure/"
+  />
 
-  <Card title="Development" icon="code">
-    Python, Git, development environments, tooling, and software engineering.
-  </Card>
+  <LinkCard
+    title="Development"
+    description="Python, Git, development environments, tooling, and software engineering."
+    href="/website/development/"
+  />
 </CardGrid>
